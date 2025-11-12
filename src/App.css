@@ -1,0 +1,525 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  height: 100vh;
+}
+
+.App {
+  min-height: 100vh;
+  width: 100%;
+  background: #f8f9fa;
+}
+
+/* Dashboard Layout - Pantalla completa */
+.dashboard {
+  padding: 2rem;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  max-width: 100%;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+  width: 100%;
+}
+
+.dashboard-header h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Metrics Grid - 4 columnas fijas */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-bottom: 3rem;
+  width: 100%;
+}
+
+.metrics-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  height: 100%;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.metrics-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.metrics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.metrics-icon {
+  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 12px;
+}
+
+.metrics-trend {
+  text-align: right;
+}
+
+.trend {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.trend.positive {
+  color: #10b981;
+}
+
+.trend-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+}
+
+.metrics-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.metrics-title {
+  color: #6c757d;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Main Content Layout - Pantalla completa */
+.main-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2.5rem;
+  align-items: start;
+  width: 100%;
+  min-height: 700px;
+}
+
+/* Charts Section - Más ancho */
+.charts-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  height: fit-content;
+  min-height: 600px;
+  width: 100%;
+}
+
+.view-navigation {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e9ecef;
+  width: 100%;
+}
+
+.nav-btn {
+  padding: 1rem 2rem;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.nav-btn:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.charts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+}
+
+.chart-full {
+  width: 100%;
+}
+
+.chart-card {
+  background: white;
+  width: 100%;
+}
+
+.chart-card h3 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 350px;
+}
+
+/* Jobs Section - Más ancho */
+.jobs-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100%;
+  width: 100%;
+}
+
+.job-summary-card, .jobs-list-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  width: 100%;
+}
+
+.job-summary-card {
+  height: fit-content;
+}
+
+.jobs-list-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-summary-card h3, .jobs-list-card h3 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.summary-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.chart-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(#667eea 0% var(--progress), #e9ecef var(--progress) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-circle::before {
+  content: '';
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  background: white;
+  border-radius: 50%;
+}
+
+.chart-circle span {
+  position: relative;
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 1.3rem;
+}
+
+.summary-stats {
+  flex: 1;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 2px solid #f1f3f4;
+}
+
+.stat:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+/* Jobs Table */
+.jobs-table {
+  overflow-x: auto;
+  flex: 1;
+  width: 100%;
+}
+
+.jobs-table table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 400px;
+}
+
+.jobs-table th,
+.jobs-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #e9ecef;
+  font-size: 0.95rem;
+}
+
+.jobs-table th {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  font-size: 1rem;
+}
+
+.jobs-table tr:hover {
+  background: #f8f9fa;
+  transform: scale(1.01);
+  transition: all 0.2s ease;
+}
+
+.jobs-table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  font-weight: 500;
+}
+
+/* Responsive para pantallas grandes */
+@media (min-width: 1920px) {
+  .dashboard {
+    padding: 3rem;
+  }
+  
+  .metrics-grid {
+    gap: 3rem;
+  }
+  
+  .metrics-card {
+    padding: 2.5rem;
+    min-height: 200px;
+  }
+  
+  .metrics-value {
+    font-size: 3rem;
+  }
+  
+  .main-content {
+    gap: 3rem;
+  }
+  
+  .chart-wrapper {
+    height: 400px;
+  }
+}
+
+/* Responsive para pantallas medianas */
+@media (max-width: 1200px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .jobs-section {
+    order: -1;
+  }
+}
+
+/* Responsive para tablets */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1.5rem;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
+  
+  .view-navigation {
+    flex-wrap: wrap;
+  }
+  
+  .nav-btn {
+    flex: 1;
+    min-width: 140px;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 0.8rem 1rem;
+  }
+  
+  .chart-row {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .chart-wrapper {
+    height: 300px;
+  }
+  
+  .main-content {
+    min-height: auto;
+  }
+  
+  .charts-section {
+    min-height: auto;
+    padding: 1.5rem;
+  }
+  
+  .job-summary-card, .jobs-list-card {
+    padding: 1.5rem;
+  }
+  
+  .summary-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  
+  .chart-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .chart-circle::before {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+/* Responsive para móviles */
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 1rem;
+  }
+  
+  .metrics-card {
+    padding: 1.5rem;
+  }
+  
+  .metrics-value {
+    font-size: 2rem;
+  }
+  
+  .metrics-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+  
+  .btn-primary {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .nav-btn {
+    padding: 0.7rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
