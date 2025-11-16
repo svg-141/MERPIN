@@ -1,0 +1,7 @@
+Order ID,Product,Quantity Ordered,Price Each,Order Date,Purchase Address
+1,ProductA,2,10.00,01/01/2023 10:00,123 Main St
+2,ProductB,1,25.50,01/01/2023 11:00,123 Main St
+3,ProductA,3,10.00,01/02/2023 12:00,456 Oak Ave
+4,ProductC,1,50.00,01/03/2023 13:00,789 Pine Rd
+5,ProductA,1,10.00,01/03/2023 14:00,789 Pine Rd
+6,ProductB,2,25.50,01/04/2023 15:00,101 Elm St
