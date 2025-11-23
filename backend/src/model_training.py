@@ -6,7 +6,7 @@ import os
 import json
 
 # Assuming etl_pipeline is in the same directory or accessible via PYTHONPATH
-from etl_pipeline import run_etl_pipeline
+from .etl_pipeline import run_etl_pipeline
 
 def train_and_evaluate_model(df_ts: pd.DataFrame, periods_to_forecast: int = 90, test_size_months: int = 3):
     """

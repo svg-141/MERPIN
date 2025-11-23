@@ -27,20 +27,17 @@ def run_etl_pipeline(csv_folder_path: str) -> pd.DataFrame:
     df_consolidated = pd.concat(df_list, ignore_index=True)
 
     # 2. Limpieza y Normalización de Datos
+    # Remove rows that are just headers repeated in the data
+    df_consolidated = df_consolidated[df_consolidated['Order Date'] != 'Order Date']
+    
     # Drop rows with any NaN values that might interfere with conversion
-    df_consolidated.dropna(inplace=True)
+    df_consolidated.dropna(how='all', inplace=True)
 
     # Convert 'Order Date' to datetime
-    # Use errors='coerce' to turn unparseable dates into NaT (Not a Time)
     df_consolidated['Order Date'] = pd.to_datetime(df_consolidated['Order Date'], errors='coerce')
     df_consolidated.dropna(subset=['Order Date'], inplace=True) # Drop rows where date conversion failed
 
     # Clean and convert 'Price Each' and 'Quantity Ordered' to numeric
-    # Remove non-numeric characters (e.g., commas, currency symbols if any)
-    df_consolidated['Price Each'] = df_consolidated['Price Each'].astype(str).str.replace(r'[^\d.]', '', regex=True)
-    df_consolidated['Quantity Ordered'] = df_consolidated['Quantity Ordered'].astype(str).str.replace(r'[^\d.]', '', regex=True)
-
-    # Convert to numeric, coercing errors to NaN
     df_consolidated['Price Each'] = pd.to_numeric(df_consolidated['Price Each'], errors='coerce')
     df_consolidated['Quantity Ordered'] = pd.to_numeric(df_consolidated['Quantity Ordered'], errors='coerce')
 

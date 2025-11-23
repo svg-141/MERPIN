@@ -1,7 +1,9 @@
-from fastapi import FastAPI, HTTPException, Response, Path
+from fastapi import FastAPI, HTTPException, Response, Path, File, UploadFile
+from typing import List
 from fastapi.responses import StreamingResponse, FileResponse
 from starlette.background import BackgroundTask
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import io
 import matplotlib
@@ -11,10 +13,11 @@ import matplotlib.pyplot as plt
 import base64
 import os
 import json
+import shutil
 
 # Import ETL and Model Training functions
-from etl_pipeline import run_etl_pipeline
-from model_training import train_and_evaluate_model
+from .etl_pipeline import run_etl_pipeline
+from .model_training import train_and_evaluate_model
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -22,6 +25,21 @@ app = FastAPI(
     description="API for predicting sales of technological equipment and providing analytical insights.",
     version="1.0.0"
 )
+
+# CORS Middleware Configuration
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Global variables to hold processed data and trained model
 # These will be loaded on startup
@@ -169,6 +187,83 @@ async def get_forecast_chart_base64(days: int = 90): # Default to 90 days if not
     # metrics = {"MAPE": 10.5, "RMSE": 200.0} # Placeholder
 
     return ChartBase64Response(image_base64=img_base64, media_type="image/png")
+
+async def reload_data_and_model():
+    """
+    Asynchronously re-runs the ETL pipeline and retrains the model.
+    This function is intended to be called after new data is uploaded.
+    """
+    global processed_data_df, trained_prophet_model, full_historical_df
+    
+    current_dir = os.path.dirname(__file__)
+    csv_data_path = os.path.join(current_dir, '..', 'CSV')
+
+    try:
+        print("Data Reload: Running ETL pipeline...")
+        processed_data_df, full_historical_df = run_etl_pipeline(csv_data_path)
+        print("Data Reload: ETL pipeline completed.")
+
+        print("Data Reload: Retraining model...")
+        trained_prophet_model, _, _, _ = train_and_evaluate_model(processed_data_df, periods_to_forecast=90, test_size_months=3)
+        print("Data Reload: Model retraining completed.")
+
+    except Exception as e:
+        print(f"Data Reload Error: {e}")
+        # In a production scenario, you might want more robust error handling,
+        # like reverting to the old model or notifying an admin.
+        raise HTTPException(status_code=500, detail=f"Failed to reload data and retrain model: {e}")
+
+@app.post("/upload/")
+async def upload_data_files(files: List[UploadFile] = File(...)):
+    """
+    Uploads new data files (CSV or JSON), saves them, and triggers a data reload and model retraining.
+    """
+    # Ensure the CSV directory exists
+    current_dir = os.path.dirname(__file__)
+    csv_data_path = os.path.join(current_dir, '..', 'CSV')
+    os.makedirs(csv_data_path, exist_ok=True)
+
+    filenames = []
+    for file in files:
+        file_path = os.path.join(csv_data_path, file.filename)
+        filenames.append(file.filename)
+
+        # Basic validation for file type
+        if not (file.filename.endswith('.csv') or file.filename.endswith('.json')):
+            raise HTTPException(status_code=400, detail=f"Invalid file type: {file.filename}. Please upload .csv or .json files.")
+
+        try:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to save file {file.filename}: {e}")
+        finally:
+            file.file.close()
+
+    # Asynchronously reload data and retrain model
+    background_tasks = BackgroundTask(reload_data_and_model)
+...
+    return {"message": f"Files {filenames} uploaded successfully. Data reload and model retraining initiated in the background."}, background_tasks
+
+@app.get("/export/", response_class=StreamingResponse)
+async def export_data():
+    """
+    Exports the full historical data to an XLSX file.
+    """
+    if full_historical_df.empty:
+        raise HTTPException(status_code=503, detail="No data available to export.")
+
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        full_historical_df.to_excel(writer, index=False, sheet_name='Sales_Data')
+    output.seek(0)
+
+    headers = {
+        'Content-Disposition': 'attachment; filename="sales_report.xlsx"'
+    }
+    return StreamingResponse(output, headers=headers, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+...
+
 
 if __name__ == "__main__":
     import uvicorn

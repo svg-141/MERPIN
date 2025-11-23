@@ -4,10 +4,31 @@ import ProductChart from './ProductChart'
 import TimeSeriesChart from './TimeSeriesChart'
 import MetricsCard from './MetricsCard'
 import JobsSection from './JobsSection'
+import FileUpload from './FileUpload' // Import the new component
 import { salesData } from '../data/salesData'
 
 const Dashboard = () => {
   const [selectedView, setSelectedView] = useState('overview')
+
+  const handleExport = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/export/');
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'sales_report.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } else {
+        console.error('Export failed');
+      }
+    } catch (error) {
+      console.error('Error exporting data:', error);
+    }
+  };
 
   return (
     <div className="dashboard">
@@ -15,9 +36,14 @@ const Dashboard = () => {
       <header className="dashboard-header">
         <h1>Electronics Store Dashboard</h1>
         <div className="header-actions">
-          <button className="btn-primary">Export Report</button>
+          <button className="btn-primary" onClick={handleExport}>Export Report</button>
         </div>
       </header>
+
+      {/* File Upload Section */}
+      <div className="upload-section">
+        <FileUpload />
+      </div>
 
       {/* Métricas principales */}
       <div className="metrics-grid">

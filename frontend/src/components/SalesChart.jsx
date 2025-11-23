@@ -1,5 +1,6 @@
 import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import CustomTooltip from './CustomTooltip' // Import the custom tooltip
 
 const SalesChart = ({ data }) => {
     // Asegurarse de que hay datos
@@ -24,9 +25,7 @@ const SalesChart = ({ data }) => {
                             fontSize={12}
                         />
                         <YAxis />
-                        <Tooltip
-                            formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']}
-                        />
+                        <Tooltip content={<CustomTooltip />} />
                         <Legend />
                         <Bar
                             dataKey="revenue"
